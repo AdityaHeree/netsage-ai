@@ -1,0 +1,52 @@
+[
+  {
+    "id": "RAI-01",
+    "case_title": "OSPF Neighbor Down Due to Timer Mismatch",
+    "category": "Routing",
+    "ai_root_cause": "OSPF Process ID mismatch between Router R1 (Process 1) and Router R2 (Process 2) caused adjacency failure.",
+    "ai_confidence": 0.92,
+    "human_correction": "OSPF Process IDs are locally significant on each router and do NOT need to match. The actual failure was caused by Hello/Dead timer mismatch (10s/40s on R1 vs 5s/20s on R2).",
+    "failure_category": "Hallucination",
+    "lesson_learned": "LLMs can conflate local configuration parameters (Process IDs) with protocol negotiation requirements (Timers, Area IDs, MTU, Subnet Masks). Rule-based timer diffing protects against this hallucination."
+  },
+  {
+    "id": "RAI-02",
+    "case_title": "Inter-VLAN Routing Sub-Interface Encapsulation Missing",
+    "category": "VLAN",
+    "ai_root_cause": "The entire router interface G0/0 is broken; rewrite all access-lists and replace the core switch configuration.",
+    "ai_confidence": 0.85,
+    "human_correction": "Sub-interface G0/0.10 simply lacked the command 'encapsulation dot1Q 10'. Only 2 CLI commands were needed on the sub-interface, not a destructive network reconfiguration.",
+    "failure_category": "Dangerous Fix Command",
+    "lesson_learned": "Generative models may propose overly broad or destructive reconfiguration when a surgical 1-line command is sufficient. Network engineers must verify scope of changes."
+  },
+  {
+    "id": "RAI-03",
+    "case_title": "DHCP APIPA Address on Multi-Subnet Campus",
+    "category": "DHCP",
+    "ai_root_cause": "DHCP server service is offline or crashed because the host received a 169.254.x.x link-local address.",
+    "ai_confidence": 0.89,
+    "human_correction": "The DHCP server was online on subnet 10.1.1.0/24; the client was on subnet 192.168.20.0/24. The default gateway router interface G0/1 was missing 'ip helper-address 10.1.1.100' to relay broadcast DISCOVER packets across layer 3.",
+    "failure_category": "Incomplete Evidence",
+    "lesson_learned": "AI diagnoses can jump to single-subnet assumptions when diagnosing broadcast protocols across routed boundaries. The system must verify helper-address presence."
+  },
+  {
+    "id": "RAI-04",
+    "case_title": "NAT Overload PAT Translation Failure",
+    "category": "NAT",
+    "ai_root_cause": "Public DNS resolution failure at Layer 7 prevents hosts from opening web pages.",
+    "ai_confidence": 0.78,
+    "human_correction": "Root cause is Layer 3/4 NAT table exhaustion. The command 'ip nat inside source list 1 interface G0/0' omitted the keyword 'overload', restricting translation to a single concurrent host.",
+    "failure_category": "Wrong OSI Layer",
+    "lesson_learned": "Symptoms of packet drop at edge routers can mimic application or DNS failures if translation table state isn't examined. Check Layer 3/4 NAT translations first."
+  },
+  {
+    "id": "RAI-05",
+    "case_title": "Extended ACL Web Traffic Block",
+    "category": "ACL",
+    "ai_root_cause": "Remove the security access list completely using 'no ip access-group 100 in' on interface G0/0.",
+    "ai_confidence": 0.94,
+    "human_correction": "Removing the entire ACL creates a critical security vulnerability by exposing the internal network. The correct fix is to insert 'permit tcp any host 10.0.0.10 eq 80' into ACL 100.",
+    "failure_category": "Dangerous Fix Command",
+    "lesson_learned": "AI recommendations may trade security for convenience by disabling firewalls/ACLs rather than tuning specific access control entries (ACEs)."
+  }
+]
