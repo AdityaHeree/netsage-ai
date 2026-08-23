@@ -30,7 +30,7 @@ def create_gemini_client(api_key: Optional[str] = None) -> genai.Client:
     Instantiates a modern google-genai Client.
     API key is read from configuration or parameter and is never hardcoded.
     """
-    key = api_key or GEMINI_API_KEY
+    key = api_key if api_key is not None else GEMINI_API_KEY
     if not key or not key.strip() or key == "your_gemini_api_key_here":
         raise ValueError("No valid Gemini API key configured. Provide an API key or use OFFLINE_MOCK mode.")
     return genai.Client(api_key=key.strip())

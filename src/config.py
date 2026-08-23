@@ -25,7 +25,7 @@ NETSAGE_MODE = os.getenv("NETSAGE_MODE", "OFFLINE_MOCK").upper()  # 'OFFLINE_MOC
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 # Default Gemini Model Name (for google-genai SDK)
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.6-flash"
 
 # Domain Categories (8 Required Networking Domains)
 CATEGORIES = [
@@ -77,5 +77,5 @@ def is_gemini_configured(api_key: str | None = None) -> bool:
     """
     Check if a valid Gemini API key is configured either in environment or passed in.
     """
-    key = api_key or GEMINI_API_KEY
+    key = api_key if api_key is not None else GEMINI_API_KEY
     return bool(key and key.strip() and key != "your_gemini_api_key_here")
